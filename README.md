@@ -4,6 +4,7 @@
 
 ### Integrantes
 - **João Paulo Marinho Correia** - riuchek@gmail.com
+- **Leonardo Celano Lentini** - leocelaano@gmail.com
 
 ---
 
