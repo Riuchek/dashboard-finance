@@ -48,19 +48,10 @@ O projeto permite visualizar gastos por período, filtrar por órgão/ministéri
 - **Go 1.21+**
 
 ### Infraestrutura
-- **Docker** - Containerização
-
-### Pré-requisitos do Sistema
-- Docker 20.10+
-- Docker Compose 2.0+
-- Git
-- **Hardware mínimo:** 2GB RAM, 1GB disco
-- **Conexão com internet** (para consumir API externa)
+- **Docker**
 
 ### Dependências Externas
 - **Portal da Transparência API** - https://api.portaldatransparencia.gov.br/
-  - Público, sem autenticação
-  - Rate limit: 400 req/minuto
   - Documentação: https://api.portaldatransparencia.gov.br/swagger-ui/index.html
 
 ---
