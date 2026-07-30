@@ -17,22 +17,10 @@ O projeto permite visualizar gastos por período, filtrar por órgão/ministéri
 
 ## Funcionalidades Propostas
 
-1. **Seletor de Período**
-   - Filtro por ano e mês
-   - Botão "Buscar" para atualizar dados
+1. **Visualização de Despesas**
+   - Dashboards diversos mostrando gastos governamentais
 
-2. **Visualização de Despesas**
-   - Gráfico de pizza (top 10 órgãos)
-   - Tabela com listagem de despesas
-   - Cards com métricas (total gasto, quantidade de órgãos)
-
-3. **Interatividade**
-   - Filtro por órgão/ministério
-   - Busca por nome
-   - Ordenação por valor
-   - Responsividade (mobile, tablet, desktop)
-
-4. **Fonte de Dados**
+2. **Fonte de Dados**
    - Consumo da API Portal da Transparência
 
 ---
