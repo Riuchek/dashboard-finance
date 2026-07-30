@@ -17,14 +17,6 @@ O projeto permite visualizar gastos por período, filtrar por órgão/ministéri
 
 ## Funcionalidades Propostas
 
-### Snapshot Inicial (Estrutura Base)
-- [x] Estrutura HTML5 semântica
-- [x] Estilização responsiva (CSS3)
-- [x] Backend em Go com integração à API
-- [x] Documentação
-
-### Funcionalidades a Desenvolver (após aceite)
-
 1. **Seletor de Período**
    - Filtro por ano e mês
    - Botão "Buscar" para atualizar dados
