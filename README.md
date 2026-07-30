@@ -12,7 +12,7 @@
 
 Dashboard interativo que exibe e analisa despesas do governo federal brasileiro, consumindo dados públicos da **API Portal da Transparência do Governo Federal**.
 
-O projeto permite visualizar gastos por período, filtrar por órgão/ministério, e compreender melhor como o dinheiro público está sendo utilizado.
+O projeto permite visualizar gastos do governo e compreender melhor como o dinheiro público está sendo utilizado.
 
 ---
 
