@@ -1,7 +1,5 @@
 const API_BASE = 'http://localhost:8080';
 
-let custosChartInstance = null;
-
 const state = {
   custosOffset: 0,
   custosLimit: 20,
@@ -94,6 +92,11 @@ function aggregateByOrgao(items) {
     .sort((a, b) => b.valor - a.valor);
 }
 
+function truncateLabel(text, max) {
+  if (!text || text.length <= max) return text || '';
+  return `${text.slice(0, max - 1)}…`;
+}
+
 function renderChart(items) {
   const canvas = $('custosChart');
   const empty = $('chartEmpty');
@@ -102,43 +105,66 @@ function renderChart(items) {
   if (ranked.length === 0) {
     canvas.hidden = true;
     empty.hidden = false;
-    if (custosChartInstance) custosChartInstance.destroy();
     return;
   }
 
   canvas.hidden = false;
   empty.hidden = true;
 
-  if (custosChartInstance) custosChartInstance.destroy();
+  const dpr = window.devicePixelRatio || 1;
+  const cssWidth = canvas.clientWidth || canvas.parentElement.clientWidth || 640;
+  const cssHeight = 320;
+  canvas.width = Math.floor(cssWidth * dpr);
+  canvas.height = Math.floor(cssHeight * dpr);
+  canvas.style.width = `${cssWidth}px`;
+  canvas.style.height = `${cssHeight}px`;
 
-  custosChartInstance = new Chart(canvas.getContext('2d'), {
-    type: 'bar',
-    data: {
-      labels: ranked.map((r) => r.nome),
-      datasets: [
-        {
-          label: 'Custo',
-          data: ranked.map((r) => r.valor),
-          backgroundColor: '#2c4a86',
-        },
-      ],
-    },
-    options: {
-      responsive: true,
-      plugins: {
-        legend: { labels: { color: '#93a1bd' } },
-      },
-      scales: {
-        x: { ticks: { color: '#93a1bd' }, grid: { color: '#263452' } },
-        y: {
-          ticks: {
-            color: '#93a1bd',
-            callback: (v) => v.toLocaleString('pt-BR', { notation: 'compact' }),
-          },
-          grid: { color: '#263452' },
-        },
-      },
-    },
+  const ctx = canvas.getContext('2d');
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  ctx.clearRect(0, 0, cssWidth, cssHeight);
+
+  const pad = { top: 16, right: 16, bottom: 72, left: 56 };
+  const plotW = cssWidth - pad.left - pad.right;
+  const plotH = cssHeight - pad.top - pad.bottom;
+  const maxValor = Math.max(...ranked.map((r) => r.valor), 1);
+  const gap = 12;
+  const barW = (plotW - gap * (ranked.length - 1)) / ranked.length;
+
+  ctx.strokeStyle = '#263452';
+  ctx.lineWidth = 1;
+  for (let i = 0; i <= 4; i += 1) {
+    const y = pad.top + (plotH * i) / 4;
+    ctx.beginPath();
+    ctx.moveTo(pad.left, y);
+    ctx.lineTo(pad.left + plotW, y);
+    ctx.stroke();
+
+    const tick = maxValor * (1 - i / 4);
+    ctx.fillStyle = '#93a1bd';
+    ctx.font = '11px "IBM Plex Mono", monospace';
+    ctx.textAlign = 'right';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(tick.toLocaleString('pt-BR', { notation: 'compact' }), pad.left - 8, y);
+  }
+
+  ranked.forEach((row, index) => {
+    const x = pad.left + index * (barW + gap);
+    const h = (row.valor / maxValor) * plotH;
+    const y = pad.top + plotH - h;
+
+    ctx.fillStyle = '#2c4a86';
+    ctx.fillRect(x, y, barW, h);
+
+    ctx.fillStyle = '#93a1bd';
+    ctx.font = '11px "IBM Plex Sans", sans-serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'top';
+    const label = truncateLabel(row.nome, 14);
+    ctx.save();
+    ctx.translate(x + barW / 2, pad.top + plotH + 8);
+    ctx.rotate(-Math.PI / 4);
+    ctx.fillText(label, 0, 0);
+    ctx.restore();
   });
 }
 
@@ -239,10 +265,12 @@ async function loadDashboard() {
 
   state.custosOffset = 0;
   state.allItems = [];
-  await loadCustos(false);
-
-  button.disabled = false;
-  button.textContent = 'Consultar';
+  try {
+    await loadCustos(false);
+  } finally {
+    button.disabled = false;
+    button.textContent = 'Consultar';
+  }
 }
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -257,5 +285,9 @@ document.addEventListener('DOMContentLoaded', () => {
   $('tesouroLoadMore').addEventListener('click', () => {
     state.custosOffset += state.custosLimit;
     loadCustos(true);
+  });
+
+  window.addEventListener('resize', () => {
+    if (state.allItems.length > 0) renderChart(state.allItems);
   });
 });
