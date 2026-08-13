@@ -10,7 +10,7 @@
 
 ## Descrição do Projeto
 
-Dashboard interativo que exibe e analisa despesas do governo federal brasileiro, consumindo dados públicos da **API Portal da Transparência do Governo Federal**.
+Dashboard interativo que exibe e analisa custos da administração pública federal, consumindo a **API pública do Tesouro Nacional**.
 
 O projeto permite visualizar gastos do governo e compreender melhor como o dinheiro público está sendo utilizado.
 
@@ -18,11 +18,11 @@ O projeto permite visualizar gastos do governo e compreender melhor como o dinhe
 
 ## Funcionalidades Propostas
 
-1. **Visualização de Despesas**
-   - Dashboards diversos mostrando gastos governamentais
+1. **Visualização de Custos**
+   - Dashboard com resumo, gráfico por órgão e tabela detalhada
 
 2. **Fonte de Dados**
-   - Consumo da API Portal da Transparência
+   - Consumo da API pública de custos do Tesouro Nacional
 
 ---
 
@@ -40,11 +40,18 @@ O projeto permite visualizar gastos do governo e compreender melhor como o dinhe
 - **Docker**
 
 ### Dependências Externas
-- **Portal da Transparência API** - https://api.portaldatransparencia.gov.br/
-  - Documentação: https://api.portaldatransparencia.gov.br/swagger-ui/index.html
+- **Tesouro Nacional (custos)** - `https://apidatalake.tesouro.gov.br/ords/custos/tt/demais`
 
 ---
 
-## 📁 Estrutura do Projeto
+## Como rodar
 
-A definir
+```bash
+cp backend/.env.example backend/.env
+docker compose up --build
+```
+
+- Frontend: http://localhost:3000
+- Backend: http://localhost:8080
+
+Documentação da API: [docs/api.md](docs/api.md)

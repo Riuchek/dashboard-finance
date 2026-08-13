@@ -5,11 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Painel de Gastos Públicos — Dashboard Finance</title>
 
-  <!-- Fontes: uma display para títulos, uma mono para números (fica com cara de "extrato oficial") -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500&display=swap" rel="stylesheet" />
 
-  <!-- Chart.js só para desenhar o gráfico de barras. É a única lib externa do projeto. -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.4/chart.umd.min.js"></script>
 
   <link rel="stylesheet" href="style.css" />
@@ -18,7 +16,6 @@
 
   <div class="page">
 
-    <!-- ===================== CABEÇALHO ===================== -->
     <header class="header">
       <div class="header__brand">
         <span class="mark" aria-hidden="true">
@@ -29,7 +26,7 @@
         </span>
         <div>
           <h1>Painel de Gastos Públicos</h1>
-          <p class="header__subtitle">Portal da Transparência &amp; Tesouro Nacional</p>
+          <p class="header__subtitle">Tesouro Nacional — custos da administração pública</p>
         </div>
       </div>
 
@@ -39,7 +36,6 @@
       </div>
     </header>
 
-    <!-- ===================== FILTROS ===================== -->
     <form class="filters" id="filtersForm">
       <div class="field">
         <label for="ano">Ano</label>
@@ -47,7 +43,7 @@
       </div>
 
       <div class="field">
-        <label for="mes">Mês (Tesouro)</label>
+        <label for="mes">Mês</label>
         <select id="mes" name="mes">
           <option value="1" selected>Janeiro</option>
           <option value="2">Fevereiro</option>
@@ -64,64 +60,45 @@
         </select>
       </div>
 
-      <div class="field">
-        <label for="orgaoSuperior">Órgão superior</label>
-        <select id="orgaoSuperior" name="orgaoSuperior">
-          <option value="26000" selected>26000 — Educação</option>
-          <option value="36000">36000 — Saúde</option>
-          <option value="20000">20000 — Presidência da República</option>
-          <option value="25000">25000 — Fazenda</option>
-        </select>
-      </div>
-
       <button type="submit" class="btn-primary">Consultar</button>
     </form>
 
     <p class="form-error" id="formError" hidden></p>
 
-    <!-- ===================== LEDGER (KPIs) ===================== -->
     <section class="ledger" aria-label="Resumo em valores" id="ledger">
       <div class="ledger__row ledger__row--head">
         <span>Indicador</span>
         <span>Valor</span>
       </div>
       <div class="ledger__row">
-        <span>Empenhado (total)</span>
-        <span class="mono" id="kpiEmpenhado">—</span>
+        <span>Custo total (página carregada)</span>
+        <span class="mono" id="kpiTotal">—</span>
       </div>
       <div class="ledger__row">
-        <span>Liquidado (total)</span>
-        <span class="mono" id="kpiLiquidado">—</span>
+        <span>Itens retornados</span>
+        <span class="mono" id="kpiItens">—</span>
       </div>
       <div class="ledger__row">
-        <span>Pago (total)</span>
-        <span class="mono" id="kpiPago">—</span>
-      </div>
-      <div class="ledger__row">
-        <span>Órgãos retornados</span>
+        <span>Órgãos distintos</span>
         <span class="mono" id="kpiOrgaos">—</span>
       </div>
+      <div class="ledger__row">
+        <span>Maior natureza</span>
+        <span class="mono" id="kpiNatureza">—</span>
+      </div>
     </section>
 
-    <!-- ===================== GRÁFICO ===================== -->
-    <section class="panel" aria-label="Gráfico de despesas por órgão">
+    <section class="panel" aria-label="Gráfico de custos por órgão">
       <div class="panel__head">
-        <h2>Despesas por órgão</h2>
-        <span class="panel__hint" id="chartHint">empenhado · liquidado · pago</span>
+        <h2>Custos por órgão</h2>
+        <span class="panel__hint" id="chartHint">soma de va_custo · Top 8</span>
       </div>
       <div class="chart-wrap">
-        <canvas id="despesasChart" height="320"></canvas>
+        <canvas id="custosChart" height="320"></canvas>
       </div>
       <p class="empty-state" id="chartEmpty" hidden>Nenhum dado retornado para esses filtros.</p>
-
-      <div class="pagination">
-        <button type="button" class="btn-secondary" id="despesasPrev" disabled>&larr; Anterior</button>
-        <span class="pagination__label" id="despesasPageLabel">página 1</span>
-        <button type="button" class="btn-secondary" id="despesasNext">Próxima &rarr;</button>
-      </div>
     </section>
 
-    <!-- ===================== TABELA TESOURO ===================== -->
     <section class="panel" aria-label="Custos do Tesouro Nacional">
       <div class="panel__head">
         <h2>Custos — Tesouro Nacional</h2>
@@ -148,58 +125,8 @@
       </div>
     </section>
 
-    <!-- ===================== DOCUMENTOS DE DESPESA ===================== -->
-    <section class="panel" aria-label="Documentos de despesa">
-      <div class="panel__head">
-        <h2>Documentos de despesa</h2>
-        <span class="panel__hint">empenho · liquidação · pagamento</span>
-      </div>
-
-      <form class="filters filters--compact" id="documentosForm">
-        <div class="field">
-          <label for="docData">Data de emissão</label>
-          <input type="date" id="docData" required />
-        </div>
-        <div class="field">
-          <label for="docFase">Fase</label>
-          <select id="docFase">
-            <option value="1">Empenho</option>
-            <option value="2">Liquidação</option>
-            <option value="3" selected>Pagamento</option>
-          </select>
-        </div>
-        <div class="field">
-          <label for="docUnidadeGestora">Unidade gestora</label>
-          <input type="text" id="docUnidadeGestora" placeholder="ex: 153173" />
-        </div>
-        <button type="submit" class="btn-primary">Buscar documentos</button>
-      </form>
-
-      <p class="form-error" id="documentosError" hidden></p>
-
-      <div class="table-wrap">
-        <table id="documentosTable">
-          <thead>
-            <tr>
-              <th>Data</th>
-              <th>Documento</th>
-              <th>Função</th>
-              <th>Programa</th>
-              <th>Favorecido</th>
-            </tr>
-          </thead>
-          <tbody id="documentosTbody"></tbody>
-        </table>
-      </div>
-      <p class="empty-state" id="documentosEmpty">Busque uma data e unidade gestora para ver documentos.</p>
-
-      <div class="pagination">
-        <span class="pagination__label" id="documentosPageLabel">página 1</span>
-      </div>
-    </section>
-
     <footer class="footer">
-      <p>Fontes: <a href="https://api.portaldatransparencia.gov.br/" target="_blank" rel="noopener">Portal da Transparência</a> e Tesouro Nacional. Dados sujeitos a atraso de divulgação.</p>
+      <p>Fonte: <a href="https://www.gov.br/tesouronacional/pt-br" target="_blank" rel="noopener">Tesouro Nacional</a> (API pública de custos). Dados sujeitos a atraso de divulgação.</p>
     </footer>
 
   </div>
